@@ -1,0 +1,63 @@
+<script type="text/javascript" src="https://unpkg.com/@alma/widgets@1.x.x/dist/alma-widgets.umd.js"></script>
+
+<script>
+    (function ($) {
+        $(function () {
+            var price = '#product-price';
+            var quantity = '#sylius_add_to_cart_cartItem_quantity';
+
+            function initWidget(merchantId, apiMode, containerId, purchaseAmount, plans) {
+                var widgets = Alma.Widgets.initialize(merchantId, apiMode);
+                widgets.add(Alma.Widgets.PaymentPlans, {
+                    container: '#' + containerId,
+                    purchaseAmount: purchaseAmount,
+                    plans: plans
+                });
+                widgets.render();
+            }
+
+
+            function refreshWidgets() {
+                $(".alma-pp-container").each(function () {
+                    var $widget = $(this).find(".alma-widget-container");
+                    if (!$widget.length) {
+                        return;
+                    }
+
+                    var settings = $widget.data("settings");
+                    var purchaseAmount = settings.amount;
+                    if (settings.refreshPrice) {
+                        var $price = $(price);
+                        if ($price.length === 0) {
+                            throw new Error('Could not find price element with query selector "' + price + '"')
+                        }
+
+                        purchaseAmount = $price.text().replace(/[^\d.]/g, '');
+                        var $quantityWanted = $(quantity);
+                        if ($quantityWanted.length) {
+                            purchaseAmount *= Number($quantityWanted.val());
+                        }
+                        //purchaseAmount = Alma.Utils.priceToCents(purchaseAmount);
+                    }
+
+                    initWidget(settings.merchantId, settings.apiMode, $widget.attr("id"), purchaseAmount, settings.plans)
+                })
+            }
+
+            $('#sylius-product-adding-to-cart select[data-option]').each(function (index, element) {
+                var select = $(element);
+                $(select).on('change', refreshWidgets);
+            });
+
+            $('#sylius-product-adding-to-cart input[type=radio]').each(function (index, element) {
+                var select = $(element);
+                $(select).on('change', refreshWidgets);
+            });
+
+
+            $(quantity).on('change', refreshWidgets);
+            refreshWidgets();
+            window.__alma_refreshWidgets = refreshWidgets;
+        });
+    })(jQuery)
+</script>

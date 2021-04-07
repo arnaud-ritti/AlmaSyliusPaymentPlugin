@@ -1,0 +1,9 @@
+{% if block.getData() %}
+	<div class="alma-pp-container">
+		<div id="alma-installments" class="alma-widget-container {{ block.getClass() }}" data-settings='{{ block.getData() }}'></div>
+	</div>
+
+	<script type="text/javascript">
+		window.__alma_refreshWidgets && __alma_refreshWidgets();
+	</script>
+{% endif %}

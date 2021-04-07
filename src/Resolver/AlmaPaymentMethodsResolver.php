@@ -93,7 +93,8 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
             // Break out enabled methods for a merchantId:apiMode group into their respective installments count
             // Doing so, we avoid requesting eligibility several times for a single installments count, in case the
             // merchant has created several gateways for the same installments count
-            $installmentsCounts = array_reduce($enabledMethods,
+            $installmentsCounts = array_reduce(
+                $enabledMethods,
                 function (array $memo, PaymentMethodInterface $method): array {
                     $config = $this->getAlmaGatewayConfig($method);
 
@@ -105,7 +106,9 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
                     $memo[$installmentsCount][] = $method;
 
                     return $memo;
-                }, []);
+                },
+                []
+            );
 
             // Configure AlmaBridge with any of the enabled methods config, then request eligibilities for all
             // configured installments counts at once
@@ -120,7 +123,8 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
 
                 /** @var int $installmentsCount */
                 $installmentsCount = $eligibility->installmentsCount;
-                $methodsToAdd = array_merge($methodsToAdd,
+                $methodsToAdd = array_merge(
+                    $methodsToAdd,
                     array_reduce(
                         $installmentsCounts[$installmentsCount],
                         function (array $memo, PaymentMethodInterface $m): array {
@@ -129,7 +133,8 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
                             $memo["method:" . $m->getId()] = $m;
 
                             return $memo;
-                        }, []
+                        },
+                        []
                     )
                 );
             }
@@ -159,7 +164,7 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
             && $subject->getOrder()->getChannel() !== null;
     }
 
-    private function getGatewayFactoryName(GatewayConfigInterface $gatewayConfig): ?string
+    public function getGatewayFactoryName(GatewayConfigInterface $gatewayConfig): ?string
     {
         $config = $gatewayConfig->getConfig();
 
@@ -184,7 +189,7 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
         return ArrayObject::ensureArrayObject($gatewayConfig->getConfig());
     }
 
-    private function getAlmaGatewayConfig(PaymentMethodInterface $method): AlmaGatewayConfigInterface
+    public function getAlmaGatewayConfig(PaymentMethodInterface $method): AlmaGatewayConfigInterface
     {
         return new GatewayConfig($this->getGatewayConfigData($method));
     }
