@@ -5,3 +5,4 @@ imports:
   - services/extensions.yml
   - services/resolvers.yml
   - services/data_builders.yml
+  - services/widget.yml

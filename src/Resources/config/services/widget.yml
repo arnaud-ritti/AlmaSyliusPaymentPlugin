@@ -1,0 +1,28 @@
+services:
+    _defaults:
+        autowire: true     
+        autoconfigure: true 
+    sylius.shop.cart.summary.after_totals:
+        class: Alma\SyliusPaymentPlugin\Block\CartWidgetEventListener
+        arguments:
+            - 'product.widget.html.twig'
+        tags:
+            - { name: kernel.event_listener, event: sonata.block.event.sylius.shop.cart.summary.after_totals, method: onBlockEvent }
+    sylius.shop.product.show.after_price:       
+        class: Alma\SyliusPaymentPlugin\Block\WidgetEventListener
+        arguments:
+            - 'product.widget.html.twig'
+        tags:
+            - { name: kernel.event_listener, event: sonata.block.event.sylius.shop.product.show.after_price, method: onBlockEvent }
+    sylius.shop.layout.head:
+        class: Sylius\Bundle\UiBundle\Block\BlockEventListener
+        arguments:
+            - 'alma.widget.product.css.html.twig'
+        tags:
+            - { name: kernel.event_listener, event: sonata.block.event.sylius.shop.layout.head, method: onBlockEvent }
+    sylius.shop.layout.javascripts:
+        class: Sylius\Bundle\UiBundle\Block\BlockEventListener
+        arguments:
+            - 'alma.widget.product.js.html.twig'
+        tags:
+            - { name: kernel.event_listener, event: sonata.block.event.sylius.shop.layout.javascripts, method: onBlockEvent }
